@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter5;
+package com.flinklearn.usecases.chapter5;
 
 public class WebsiteReview {
     public String getId() {

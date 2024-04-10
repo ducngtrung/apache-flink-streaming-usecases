@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter4;
+package com.flinklearn.usecases.chapter4;
 
 public class PlayerScore {
 

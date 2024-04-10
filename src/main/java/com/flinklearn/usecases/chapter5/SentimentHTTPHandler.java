@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter5;
+package com.flinklearn.usecases.chapter5;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;

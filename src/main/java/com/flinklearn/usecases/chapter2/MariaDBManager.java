@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter2;
+package com.flinklearn.usecases.chapter2;
 
 import java.io.Serializable;
 import java.sql.Connection;
@@ -68,7 +68,7 @@ public class MariaDBManager implements Runnable, Serializable {
         }
     }
 
-    //Use to print 5 second statistics from the MariaDB Database
+    //Used to print 5-second statistics from the MariaDB Database
     @Override
     public void run() {
 

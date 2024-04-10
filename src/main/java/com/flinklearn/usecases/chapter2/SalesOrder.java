@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter2;
+package com.flinklearn.usecases.chapter2;
 
 public class SalesOrder {
     int orderId;

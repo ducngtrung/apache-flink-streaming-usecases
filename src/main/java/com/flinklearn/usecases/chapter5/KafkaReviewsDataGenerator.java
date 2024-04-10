@@ -1,23 +1,22 @@
-package com.learning.flinkstreaming.chapter6;
+package com.flinklearn.usecases.chapter5;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Scanner;
 
 /****************************************************************************
- * This Generator generates a webpage view events
+ * This Generator generates a a series movie review
  * into Kafka at random intervals
- * This can be used to test Streaming pipelines
+ * This can be used to test real time prediction pipelines
  ****************************************************************************/
 
-public class KafkaViewsDataGenerator implements Runnable {
+public class KafkaReviewsDataGenerator implements Runnable {
 
 
     public static final String ANSI_RESET = "\u001B[0m";
@@ -25,10 +24,10 @@ public class KafkaViewsDataGenerator implements Runnable {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
-    public static final String kafkaTopic = "streaming.views.input";
+    public static final String topic = "streaming.sentiment.input";
 
     public static void main(String[] args) {
-        KafkaViewsDataGenerator kodg = new KafkaViewsDataGenerator();
+        KafkaReviewsDataGenerator kodg = new KafkaReviewsDataGenerator();
         kodg.run();
     }
 
@@ -36,7 +35,7 @@ public class KafkaViewsDataGenerator implements Runnable {
 
         try {
 
-            System.out.println("Starting Kafka Views Generator..");
+            System.out.println("Starting Kafka Movie review Generator..");
             //Wait for the main flow to be setup.
             Thread.sleep(5000);
 
@@ -52,53 +51,30 @@ public class KafkaViewsDataGenerator implements Runnable {
             Producer<String,String> myProducer
                     = new KafkaProducer<String, String>(kafkaProps);
 
-            //Define list of Products
-            List<String> users = new ArrayList<String>();
-            users.add("Bob");
-            users.add("Mike");
-            users.add("Kathy");
-            users.add("Sam");
-
-            List<String> topics = new ArrayList<String>();
-            topics.add("AI");
-            topics.add("BigData");
-            topics.add("CI_CD");
-            topics.add("Cloud");
-
             //Define a random number generator
             Random random = new Random();
 
-            int recKey = (int)Math.floor(System.currentTimeMillis()/1000);
+            //Get reviews from the movie-reviews.txt file
+            Scanner scanner = new Scanner(
+                    new File("src/main/resources/movie-reviews.txt"));
 
-            //Generate 100 sample order records
-            for(int i=0; i < 100; i++) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
 
-                recKey++;
+                int reviewId = (int)Math.floor(System.currentTimeMillis()/1000);
 
-                //Capture current timestamp
-                Timestamp currTimeStamp = new Timestamp(System.currentTimeMillis());
-                String user = users.get(random.nextInt(users.size()));
-                String topic = topics.get(random.nextInt(topics.size()));
-                int minutes = random.nextInt(10) + 1;
-
-                //Form a CSV
-                String value= "\"" + currTimeStamp.toString() + "\","
-                        +  "\"" + user + "\","
-                        +  "\"" + topic + "\","
-                        +  minutes  ;
-
-
+                //Publish the review
                 ProducerRecord<String, String> record =
                         new ProducerRecord<String, String>(
-                                kafkaTopic,
-                                String.valueOf(recKey),
-                                value );
+                                topic,
+                                String.valueOf(reviewId),
+                                line );
 
                 RecordMetadata rmd = myProducer.send(record).get();
 
                 System.out.println(ANSI_PURPLE +
-                        "Kafka Views Stream Generator : Sending Event : "
-                        + String.join(",", value)  + ANSI_RESET);
+                        "Kafka Reviews Stream Generator : Sending Event : "
+                        + reviewId + " = " + line  + ANSI_RESET);
 
                 //Sleep for a random time ( 1 - 3 secs) before the next record.
                 Thread.sleep(random.nextInt(2000) + 1000);

@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter4;
+package com.flinklearn.usecases.chapter4;
 
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.configuration.Configuration;

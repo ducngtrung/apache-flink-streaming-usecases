@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter3;
+package com.flinklearn.usecases.chapter3;
 
 import org.apache.flink.api.common.functions.FilterFunction;
 import org.apache.flink.api.common.functions.MapFunction;

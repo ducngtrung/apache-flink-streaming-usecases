@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter2;
+package com.flinklearn.usecases.chapter2;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.kafka.clients.producer.KafkaProducer;

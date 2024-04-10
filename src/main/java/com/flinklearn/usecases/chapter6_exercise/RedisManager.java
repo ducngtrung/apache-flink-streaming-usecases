@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter4;
+package com.flinklearn.usecases.chapter6_exercise;
 
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.Tuple;
@@ -19,7 +19,7 @@ public class RedisManager implements Runnable {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
-    private static String lbKey = "player-leaderboard";
+    private static String lbKey = "topics-leaderboard";
 
     private Jedis jedis;
 
@@ -35,11 +35,11 @@ public class RedisManager implements Runnable {
         //Open new connection for writing.
         Jedis jedisWriter = new Jedis("localhost");
         try {
-            jedisWriter.zincrby(lbKey,2,"Mouse");
-            jedisWriter.zincrby(lbKey,3,"Keyboard");
+            jedisWriter.zincrby(lbKey,2,"AI");
+            jedisWriter.zincrby(lbKey,3,"Big Data");
             Thread.currentThread().sleep(6000);
-            jedisWriter.zincrby(lbKey,1,"Monitor");
-            jedisWriter.zincrby(lbKey,2,"Mouse");
+            jedisWriter.zincrby(lbKey,1,"Cloud");
+            jedisWriter.zincrby(lbKey,2,"AI");
         }
         catch(Exception e) {
             e.printStackTrace();
@@ -51,7 +51,7 @@ public class RedisManager implements Runnable {
         try{
             //Jedis running on localhost and port 6379
             jedis =new Jedis("localhost");
-            //reset the sorted set key
+            //reset the key
             jedis.del(lbKey);
             System.out.println("Redis connection setup successfully");
         }
@@ -61,7 +61,6 @@ public class RedisManager implements Runnable {
     }
 
     public void update_score(String product, double count) {
-
         jedis.zincrby(lbKey,count,product);
     }
 
@@ -81,7 +80,7 @@ public class RedisManager implements Runnable {
                 while (iScores.hasNext()) {
                     Tuple score= iScores.next();
                     System.out.println(
-                            ANSI_BLUE + "Leaderboard - " + position + " : "
+                            ANSI_BLUE + "Trending Topics - " + position + " : "
                             +  score.getElement() + " = " + score.getScore()
                             + ANSI_RESET);
                     position++;

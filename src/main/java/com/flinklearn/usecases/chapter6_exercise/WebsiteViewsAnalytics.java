@@ -1,4 +1,4 @@
-package com.learning.flinkstreaming.chapter6;
+package com.flinklearn.usecases.chapter6_exercise;
 
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
