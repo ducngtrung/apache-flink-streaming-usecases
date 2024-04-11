@@ -73,62 +73,60 @@ public class StreamingAnalytics {
             //Convert each record to an Object
             DataStream<SalesOrder> salesOrderObject
                     = ordersRawInput
-                        .map(new MapFunction<ObjectNode, SalesOrder>() {
+                        .map( new MapFunction<ObjectNode, SalesOrder>() {
                             @Override
                             public SalesOrder map(ObjectNode orderJson) {
-
                                 System.out.println("--- Received Record : " + orderJson);
                                 SalesOrder so = new SalesOrder();
                                 so.setOrderId(orderJson.get("value").get("orderId").asInt());
                                 so.setProduct(orderJson.get("value").get("product").asText());
                                 so.setQuantity(orderJson.get("value").get("quantity").asInt());
                                 so.setPrice(orderJson.get("value").get("price").asDouble());
-
                                 return so;
                             }
-                        });
+                        } );
 
             //Compute product-wise 5-second total order value
             DataStream<Tuple3<String,String,Double>> productWindowedSummary =
                     salesOrderObject
+
                         //Extract Product and Total order value
-                        .map(new MapFunction<SalesOrder,
-                        Tuple2<String, Double>>() {
-                                 @Override
-                                 public Tuple2<String, Double> map(SalesOrder salesOrder)
-                                         throws Exception {
-                                     return new Tuple2<String,Double>(
-                                             salesOrder.getProduct(),
-                                             salesOrder.getQuantity()
-                                                     * salesOrder.getPrice());
-                                 }
+                        .map( new MapFunction<SalesOrder, Tuple2<String, Double>>() {
+                             @Override
+                             public Tuple2<String, Double> map(SalesOrder salesOrder)
+                                     throws Exception {
+                                 return new Tuple2<String,Double>(
+                                         salesOrder.getProduct(),
+                                         salesOrder.getQuantity()
+                                                 * salesOrder.getPrice());
                              }
-                        )
+                        } )
 
-                            //Group by Product
+                        //Group by Product
                         .keyBy(new KeySelector<Tuple2<String, Double>, String>() {
-
                             @Override
                             public String getKey(Tuple2<String, Double> productValue)
                                     throws Exception {
                                 return productValue.f0;
                             }
-                        })
+                        } )
 
-                                //Create Tumbling window of 5 seconds
-                        .window( TumblingProcessingTimeWindows.of(Time.seconds(5)))
+                        //Create Tumbling window of 5 seconds
+                        .window(TumblingProcessingTimeWindows.of(Time.seconds(5)))
 
-                                //Compute Summary and publish results
-                        .process(new ProcessWindowFunction<Tuple2<String, Double>,
-                                Tuple3<String, String,Double>, String, TimeWindow>() {
-
+                        //Compute Summary and publish results
+                        .process( new ProcessWindowFunction<
+                                Tuple2<String, Double>,
+                                Tuple3<String, String,Double>,
+                                String,
+                                TimeWindow
+                                >() {
                             @Override
                             public void process(String product,
                                                 Context context,
                                                 Iterable<Tuple2<String, Double>> iterable,
                                                 Collector<Tuple3<String,String,Double>> collector)
                                     throws Exception {
-
                                 Double totalValue = 0.0;
                                 for( Tuple2<String,Double> order : iterable ) {
                                     totalValue = totalValue + order.f1;
@@ -137,13 +135,12 @@ public class StreamingAnalytics {
                                         new Date(context.window().getStart()).toString(),
                                                 product,
                                                 totalValue));
-
                             }
-                        });
+                        } );
 
             //Print Summary records
             productWindowedSummary
-                    .map(new MapFunction<Tuple3<String, String, Double>, Object>() {
+                    .map( new MapFunction<Tuple3<String, String, Double>, Object>() {
                         @Override
                         public Object map(Tuple3<String, String, Double> summary) throws Exception {
                             System.out.println("Summary : "
@@ -152,12 +149,13 @@ public class StreamingAnalytics {
                                     + ", Total Value = " + summary.f2);
                             return null;
                         }
-                    });
+                    } );
 
             //Add sink to MySQL using the rich sink function
             productWindowedSummary
-                    .addSink(new RichSinkFunction<Tuple3<String, String, Double>>() {
+                    .addSink( new RichSinkFunction<Tuple3<String, String, Double>>() {
                         MariaDBManager dbUpdater;
+
                         //Open is called once per task slot
                         @Override
                         public void open(Configuration parameters) throws Exception {
@@ -179,7 +177,7 @@ public class StreamingAnalytics {
                                            Context context) throws Exception {
                             dbUpdater.insertSummary(summary.f0, summary.f1, summary.f2);
                         }
-                    });
+                    } );
 
             //Execute the streaming pipeline
             streamEnv.execute("Flink Streaming Analytics");
