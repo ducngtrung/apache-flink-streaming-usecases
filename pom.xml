@@ -7,6 +7,7 @@
     <groupId>com.flinklearn.usecases</groupId>
     <artifactId>apache-flink-streaming-usecases</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <dependencies>
         <dependency>
