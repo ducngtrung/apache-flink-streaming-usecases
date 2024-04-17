@@ -40,8 +40,6 @@
             <version>1.10.2</version>
         </dependency>
 
-
-
         <!-- https://mvnrepository.com/artifact/edu.stanford.nlp/stanford-corenlp -->
         <dependency>
             <groupId>edu.stanford.nlp</groupId>
@@ -62,7 +60,6 @@
             <version>8.0.21</version>
         </dependency>
 
-
         <!-- https://mvnrepository.com/artifact/redis.clients/jedis -->
         <dependency>
             <groupId>redis.clients</groupId>
@@ -80,8 +77,6 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.10</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -95,9 +90,7 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
-
 
 </project>
